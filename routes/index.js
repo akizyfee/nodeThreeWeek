@@ -84,7 +84,7 @@ router.delete('/', async function (req, res, next) {
 router.delete('/deletone/:id', async function (req, res, next) {
   try {
     const id = req.params.id
-    const deleteOne = await Post.find(id)
+    const deleteOne = await Post.findById(id)
     if(!deleteOne) {
       res.status(400).json({
         status: 'false',
