@@ -16,12 +16,19 @@ router.get('/', async function (req, res, next) {
 router.post('/', async function (req, res, next) {
   try {
     const data = req.body;
-    const newPost = await Post.create(data)
-  
-    res.status(200).json({
-      status: 'success',
-      newPost
-    })
+    if(data.content !== ''){
+      const newPost = await Post.create(data)
+    
+      res.status(200).json({
+        status: 'success',
+        newPost
+      })
+    }else{
+      res.status(400).json({
+        status: "false",
+        message:"欄位未填寫"
+      })
+    }
   } catch (error) {
     res.status(400).json({
       status: "false",
@@ -35,20 +42,27 @@ router.patch('/:id', async function (req, res, next) {
     const id = req.params.id
     const name = req.body.name
     const content = req.body.content
-  
-    const newPost = await Post.findByIdAndUpdate(
-      id,
-      {
-        name,
-        content
-      },
-      { new: true }//修改成功後回傳修改結果
-    )
-  
-    res.status(200).json({
-      status: 'success',
-      newPost
-    })
+    const newPost = await Post.findByIdAndUpdate(id)
+    if(!newPost){
+      res.status(400).json({
+        status: 'false',
+        message: '無此id'
+      })
+    }else {
+      const newPost = await Post.findByIdAndUpdate(
+        id,
+        {
+          name,
+          content
+        },
+        { new: true }//修改成功後回傳修改結果
+      )
+    
+      res.status(200).json({
+        status: 'success',
+        newPost
+      })
+    }
   } catch (error) {
     res.status(400).json({
       status: 'false',
@@ -70,13 +84,19 @@ router.delete('/', async function (req, res, next) {
 router.delete('/:id', async function (req, res, next) {
   try {
     const id = req.params.id
-    await Post.findByIdAndDelete(id)
-    const posts = await Post.find()
-  
-    res.status(200).json({
-      status: 'success',
-      posts
-    })
+    const deleteOne = await Post.findByIdAndDelete(id)
+    if(!deleteOne) {
+      res.status(400).json({
+        status: 'false',
+        message: '無此id'
+      })
+    }else{
+      const deleteOne = await Post.findByIdAndDelete(id)      
+        res.status(200).json({
+          status: 'success',
+          deleteOne
+        })
+    }
   } catch (error) {
     res.status(400).json({
       status: 'false',
